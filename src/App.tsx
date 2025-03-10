@@ -87,10 +87,21 @@ export default function Game() {
         setCurrentMove(nextMove);
     }
 
-    const moves = history.map((_, move) => {
+    const moves = history.map((squares, move) => {
         let description;
         if (move > 0) {
-            description = 'move #' + move;
+            const previousSquares = history[move - 1];
+            let playedSquareValue: SquareValue = null;
+            let playedSquareIndex = -1;
+            for (let i = 0; i < squares.length; i++) {
+                if (previousSquares[i] !== squares[i]) {
+                    playedSquareIndex = i;
+                    playedSquareValue = squares[i];
+                    break;
+                }
+            }
+            const [row, col] = [Math.floor(playedSquareIndex / boardSize), playedSquareIndex % boardSize];
+            description = `${playedSquareValue}(${row + 1}, ${col + 1})`;
         } else {
             description = 'game start';
         }
@@ -108,7 +119,7 @@ export default function Game() {
         <div className="game">
             <div className="game-board">
                 <input type="range" min="3" max="5" step="1" defaultValue="3"
-                       onChange={(e) => handleBoardResize(Number(e.target.value))} />
+                       onChange={e => handleBoardResize(Number(e.target.value))} />
                 <Board xIsNext={xIsNext} squares={currentSquares} boardSize={boardSize} onPlay={handlePlay} />
             </div>
             <div className="game-info">
