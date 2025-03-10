@@ -10,13 +10,14 @@ function Square({value, onSquareClick}: { value: SquareValue, onSquareClick: () 
     );
 }
 
-function Board({xIsNext, squares, onPlay}: {
+function Board({xIsNext, squares, boardSize, onPlay}: {
     xIsNext: boolean;
     squares: SquareValue[],
+    boardSize: number,
     onPlay: (nextSquares: SquareValue[]) => void
 }) {
     function handleClick(i: number) {
-        if (calculateWinner(squares) || squares[i]) {
+        if (squares[i] || calculateWinner(squares, boardSize)) {
             return;
         }
         const nextSquares = squares.slice();
@@ -28,7 +29,7 @@ function Board({xIsNext, squares, onPlay}: {
         onPlay(nextSquares);
     }
 
-    const winner = calculateWinner(squares);
+    const winner = calculateWinner(squares, boardSize);
     let status;
     if (winner) {
         status = 'Winner: ' + winner;
@@ -39,10 +40,9 @@ function Board({xIsNext, squares, onPlay}: {
     const squareElements = squares.map((square: SquareValue, index: number) => (
         <Square key={index} value={square} onSquareClick={() => handleClick(index)} />));
 
-    const size = 3;
-    const boardRows = [...Array(size).keys()].map((i) => (
+    const boardRows = [...Array(boardSize).keys()].map((i) => (
         <div key={i} className="board-row">
-            {squareElements.slice(size * i, size * (i + 1))}
+            {squareElements.slice(boardSize * i, boardSize * (i + 1))}
         </div>
     ));
 
@@ -55,9 +55,11 @@ function Board({xIsNext, squares, onPlay}: {
 }
 
 export default function Game() {
-    const [history, setHistory] = useState<SquareValue[][]>([Array(9).fill(null)]);
     const [historyOrderAsc, setHistoryOrderAsc] = useState(true);
     const [currentMove, setCurrentMove] = useState(0);
+    const [boardSize, setBoardSize] = useState(3);
+    const [history, setHistory] = useState<SquareValue[][]>([Array(3 * 3).fill(null)]);
+
     const xIsNext = currentMove % 2 === 0;
     const currentSquares = history[currentMove];
 
@@ -65,6 +67,12 @@ export default function Game() {
         const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
         setHistory(nextHistory);
         setCurrentMove(nextHistory.length - 1);
+    }
+
+    function handleBoardResize(newSize: number) {
+        setHistory([Array(newSize * newSize).fill(null)]);
+        setCurrentMove(0);
+        setBoardSize(newSize);
     }
 
     function jumpTo(nextMove: number) {
@@ -91,7 +99,9 @@ export default function Game() {
     return (
         <div className="game">
             <div className="game-board">
-                <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+                <input type="range" min="3" max="5" step="1" defaultValue="3"
+                       onChange={(e) => handleBoardResize(Number(e.target.value))} />
+                <Board xIsNext={xIsNext} squares={currentSquares} boardSize={boardSize} onPlay={handlePlay} />
             </div>
             <div className="game-info">
                 <button onClick={() => setHistoryOrderAsc(!historyOrderAsc)}>Toggle order</button>
@@ -101,21 +111,39 @@ export default function Game() {
     );
 }
 
-function calculateWinner(squares: SquareValue[]) {
-    const lines = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ];
+function calculateWinner(squares: SquareValue[], size: number) {
+    const lines: number[][] = [];
+    // rows
+    for (let i = 0; i < size; i++) {
+        lines.push([...squares.keys()].slice(size * i, size * (i + 1)));
+    }
+
+    // columns
+    for (let i = 0; i < size; i++) {
+        const col: number[] = [];
+        for (let j = 0; j < size; j++) {
+            col.push(i + j * size)
+        }
+        lines.push(col);
+    }
+
+    // diagonals
+    const diagonal1: number[] = [];
+    const diagonal2: number[] = [];
+    for (let i = 0; i < size; i++) {
+        diagonal1.push(i * (size + 1));
+        diagonal2.push((i + 1) * (size - 1));
+    }
+
+    lines.push(diagonal1);
+    lines.push(diagonal2);
+
+    console.log(lines);
     for (let i = 0; i < lines.length; i++) {
-        const [a, b, c] = lines[i];
-        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+        const lineValues = lines[i].map((index) => squares[index]);
+        const first = lineValues[0];
+        if (first && lineValues.every(element => element === first)) {
+            return first;
         }
     }
     return null;
