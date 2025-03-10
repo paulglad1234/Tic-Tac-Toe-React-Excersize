@@ -1,4 +1,4 @@
-# Tic-Tac-Toe React Excersize
+# Tic-Tac-Toe React Exersize
 
 The [Tic-Tac-Toe tutorial on react.dev](https://react.dev/learn/tutorial-tic-tac-toe) suggests some extra excersizes to practice basic react skills:
 > If you have extra time or want to practice your new React skills, here are some ideas for improvements that you could make to the tic-tac-toe game, listed in order of increasing difficulty:
