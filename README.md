@@ -9,3 +9,5 @@ The [Tic-Tac-Toe tutorial on react.dev](https://react.dev/learn/tutorial-tic-tac
 > - Display the location for each move in the format (row, col) in the move history list.
 
 Done all that here except I've created the repo with vite (so styles are a bit different). And also I've added a slider to change the board size.
+
+Not sure if I configured CodeSandbox correctly but here: https://codesandbox.io/p/github/paulglad1234/Tic-Tac-Toe-React-Excersize/main
