@@ -8,6 +8,8 @@ The [Tic-Tac-Toe tutorial on react.dev](https://react.dev/learn/tutorial-tic-tac
 > - When someone wins, highlight the three squares that caused the win (and when no one wins, display a message about the result being a draw).
 > - Display the location for each move in the format (row, col) in the move history list.
 
-Done all that here except I've created the repo with vite (so styles are a bit different). And also I've added a slider to change the board size.
+Done all that here. And also I've added a slider to change the board size. And types were added to the code.
 
 Not sure if I configured CodeSandbox correctly but here: https://codesandbox.io/p/github/paulglad1234/Tic-Tac-Toe-React-Excersize/main
+
+Side note: I've created the repo with vite (so styles are a bit different).
