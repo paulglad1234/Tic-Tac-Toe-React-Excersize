@@ -2,9 +2,17 @@ import {useState} from 'react';
 
 type SquareValue = 'X' | 'O' | null;
 
-function Square({value, onSquareClick}: { value: SquareValue, onSquareClick: () => void }) {
+function Square({value, isWinner, onSquareClick}: {
+    value: SquareValue,
+    isWinner: boolean,
+    onSquareClick: () => void
+}) {
+    let className = 'square';
+    if (isWinner) {
+        className += ' winner';
+    }
     return (
-        <button className="square" onClick={onSquareClick}>
+        <button className={className} onClick={onSquareClick}>
             {value}
         </button>
     );
@@ -33,11 +41,12 @@ function Board({xIsNext, squares, boardSize, onPlay}: {
     const status = winner == 'Draw'
         ? 'Draw'
         : winner
-            ? 'Winner: ' + winner
+            ? 'Winner: ' + squares[winner[0]]
             : 'Next player: ' + (xIsNext ? 'X' : 'O');
 
     const squareElements = squares.map((square: SquareValue, index: number) => (
-        <Square key={index} value={square} onSquareClick={() => handleClick(index)} />));
+        <Square key={index} value={square} isWinner={Array.isArray(winner) && winner.includes(index)}
+                onSquareClick={() => handleClick(index)} />));
 
     const boardRows = [...Array(boardSize).keys()].map((i) => (
         <div key={i} className="board-row">
@@ -110,7 +119,7 @@ export default function Game() {
     );
 }
 
-function calculateWinner(squares: SquareValue[], size: number): SquareValue | 'Draw' {
+function calculateWinner(squares: SquareValue[], size: number): number[] | 'Draw' | null {
     const lines: number[][] = [];
     // rows
     for (let i = 0; i < size; i++) {
@@ -137,12 +146,11 @@ function calculateWinner(squares: SquareValue[], size: number): SquareValue | 'D
     lines.push(diagonal1);
     lines.push(diagonal2);
 
-    console.log(lines);
     for (let i = 0; i < lines.length; i++) {
         const lineValues = lines[i].map((index) => squares[index]);
         const first = lineValues[0];
         if (first && lineValues.every(element => element === first)) {
-            return first;
+            return lines[i];
         }
     }
     return squares.some(element => element === null) ? null : 'Draw';

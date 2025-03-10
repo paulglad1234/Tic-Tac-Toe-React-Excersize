@@ -54,9 +54,16 @@ button:focus-visible {
 }
 
 .square {
-  height: 3rem;
-  width: 3rem;
+  height: 3.2rem;
+  width: 3.2rem;
   vertical-align: middle;
+}
+
+.square.winner {
+  background-color: #646cff;
+}
+.square.winner:hover {
+  border-color: #1a1a1a;
 }
 
 .status {
