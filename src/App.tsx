@@ -30,12 +30,11 @@ function Board({xIsNext, squares, boardSize, onPlay}: {
     }
 
     const winner = calculateWinner(squares, boardSize);
-    let status;
-    if (winner) {
-        status = 'Winner: ' + winner;
-    } else {
-        status = 'Next player: ' + (xIsNext ? 'X' : 'O');
-    }
+    const status = winner == 'Draw'
+        ? 'Draw'
+        : winner
+            ? 'Winner: ' + winner
+            : 'Next player: ' + (xIsNext ? 'X' : 'O');
 
     const squareElements = squares.map((square: SquareValue, index: number) => (
         <Square key={index} value={square} onSquareClick={() => handleClick(index)} />));
@@ -111,7 +110,7 @@ export default function Game() {
     );
 }
 
-function calculateWinner(squares: SquareValue[], size: number) {
+function calculateWinner(squares: SquareValue[], size: number): SquareValue | 'Draw' {
     const lines: number[][] = [];
     // rows
     for (let i = 0; i < size; i++) {
@@ -146,5 +145,5 @@ function calculateWinner(squares: SquareValue[], size: number) {
             return first;
         }
     }
-    return null;
+    return squares.some(element => element === null) ? null : 'Draw';
 }
